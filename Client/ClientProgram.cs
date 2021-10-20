@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
 
@@ -6,6 +9,8 @@ namespace Client
 {
     class ClientProgram
     {
+        static readonly HttpClient HttpClient = new HttpClient();
+
         static void Main(string[] args)
         {
 
@@ -29,6 +34,8 @@ namespace Client
 
             Console.WriteLine($"Server response '{response}' and the read count was {rdCnt}");
 
+        
+   
         }
     }
 }

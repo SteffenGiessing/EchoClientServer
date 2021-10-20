@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection.Metadata;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace Server
@@ -32,8 +34,9 @@ namespace Server
                 var response = Encoding.UTF8.GetBytes(message.ToUpper());
 
                 stream.Write(response);
-            }
 
+            }
         }
+
     }
 }

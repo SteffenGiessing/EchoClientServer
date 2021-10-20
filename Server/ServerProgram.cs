@@ -8,7 +8,7 @@ using System.Text;
 namespace Server
 {
     class ServerProgram
-    {/*THis iS a new comment dsadsada*/
+    {/*THis iS a new comment dsadsadadsada*/
         static void Main(string[] args)
         {
             IPAddress ipAddress = Dns.Resolve("localhost").AddressList[0];

@@ -8,14 +8,14 @@ using System.Text;
 namespace Server
 {
     class ServerProgram
-    {
+    {/*THis iS a new comment*/
         static void Main(string[] args)
         {
             IPAddress ipAddress = Dns.Resolve("localhost").AddressList[0];
             var server = new TcpListener(ipAddress, 5000);
             server.Start();
             Console.WriteLine("Server started");
-
+    
             while (true)
             {
                 var client = server.AcceptTcpClient();

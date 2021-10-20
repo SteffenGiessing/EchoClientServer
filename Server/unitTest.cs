@@ -28,8 +28,6 @@ namespace Server
     {
         private const int Port = 5000;
 
-
-
         [Fact]
         public void Constraint_ConnectionWithoutRequest_ShouldConnect()
         {
@@ -606,7 +604,7 @@ namespace Server
         private static TcpClient Connect()
         {
             var client = new TcpClient();
-            client.Connect(IPAddress.Loopback, Port);
+            client.Connect(hostname:"localhost", Port);
             return client;
         }
 

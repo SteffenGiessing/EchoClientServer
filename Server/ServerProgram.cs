@@ -17,6 +17,7 @@ using Microsoft.VisualStudio.TestPlatform.Common;
 namespace Server
 {
     //this is a test
+    //this is another test
     public class ServerProgram
     {
         public class RequestFormat

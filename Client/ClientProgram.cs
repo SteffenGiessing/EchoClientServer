@@ -33,9 +33,7 @@ namespace Client
             var response = Encoding.UTF8.GetString(buffer, 0, rdCnt);
 
             Console.WriteLine($"Server response '{response}' and the read count was {rdCnt}");
-
-        
-   
+            
         }
     }
 }

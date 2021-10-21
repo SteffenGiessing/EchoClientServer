@@ -10,21 +10,21 @@ namespace Client
     class ClientProgram
     {
         static readonly HttpClient HttpClient = new HttpClient();
-
+        
         static void Main(string[] args)
         {
-
+            
             var client = new TcpClient();
 
             client.Connect("localhost", 5000);
 
             var stream = client.GetStream();
 
-            var message = "hello";
+            var message = Console.ReadLine();
 
             var msgBytes = Encoding.UTF8.GetBytes(message);
 
-            stream.Write(msgBytes);
+            stream.Write(msgBytes, 0, msgBytes.Length);
 
             var buffer = new byte[1024];
 

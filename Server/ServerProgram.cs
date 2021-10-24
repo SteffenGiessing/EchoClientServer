@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using System.Xml.Schema;
 using Microsoft.VisualStudio.TestPlatform.Common;
 using Server;
-
 namespace Server
 {
     //this is a test
@@ -29,15 +28,11 @@ namespace Server
             public string Date { get; set; }
             public string Body { get; set; }
         }
-
         public class Response
         {
             public string Body { get; set; }
             public string Status { get; set; }
-
-
         }
-
         public class Category
         {
             [JsonPropertyName("cid")] public int Id { get; set; }
@@ -47,11 +42,9 @@ namespace Server
         {
             return DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
         }
-
         static void Main(string[] args)
         {
             Response response = new Response();
-
             IPAddress ipAddress = Dns.Resolve("localhost").AddressList[0];
             var server = new TcpListener(ipAddress, 5000);
             server.Start();
@@ -61,7 +54,6 @@ namespace Server
             {
                 Console.WriteLine("Listening");
                 var client = server.AcceptTcpClient();
-
                 var request = client.ReadResponse();
                 Console.WriteLine(request);
                 Console.WriteLine($"Incoming request: {request.JsonObj()}");
@@ -78,48 +70,49 @@ namespace Server
                     categories.Add(new {cid = 2, name = "Condiments"});
                     categories.Add(new {cid = 3, name = "Confections"});
                     Console.WriteLine(DateTimeOffset.Now.ToUnixTimeSeconds().ToString());
-                    
-                    
+
+
                     DateTime now = DateTime.Now;
-                    
-                    if (request.Method == null && request.Path == null && request.Date == null && request.Body == null)
+
+                    if (request.Method == null && request.Date == null && request.Body == null)
                     {
-                        response.Status = "missing body, illegal body, missing date";
+                        response.Status = "missing method, missing date, missing body";
                         client.SendRequest(response.ToJson());
                     }
+
                     
-                    else if (requirespath.Contains(request.Method.ToLower()) && request.Path == null)
+                    if (requirespath.Contains(request.Method.ToLower()) && request.Path == null)
                     {
                         response.Status = "missing resource";
                         client.SendRequest(response.ToJson());
                     }
-                    
-                    else if (DateTime.TryParse(request.Date, out now))
-                        response.Status = "4 illegal date";
-                    
-                    else if (request.Method.Contains("create") || request.Method.Contains("update") ||
+
+
+                    if (request.Method.Contains("create") || request.Method.Contains("update") ||
                         request.Method.Contains("echo") && request.Body == null && request.Date.Length == 10 && request.Path.Length > 4)
                     {
                         if (request.Path.Contains("/api/categories/"))
                         {
-                            if (!request.Body.Contains("{"))
+                            if (!request.Body.Contains("{}"))
                             {
                                 response.Status = "illegal body";
                                 client.SendRequest(response.ToJson());
                             }
                         }
                         
-
                         response.Status = "missing body";
                         client.SendRequest(response.ToJson());
                     }
-
                     if (requirespath.Contains(request.Method.ToLower()) && !request.Path.Contains("/api/categories/"))
                     {
                         response.Status = "4 Bad Request";
                             response.Body = null;
                             client.SendRequest(response.ToJson());
                     }
+                    
+                    
+                    if (DateTime.TryParse(request.Date, out now))
+                        response.Status = "illegal date";
                     
                     if (request.Method == "echo")
                     {
@@ -128,71 +121,64 @@ namespace Server
                         client.SendRequest(response.ToJson());
                     }
                  
-
                     if (request.Method == "xxxx")
                     {
                         response.Status = "illegal method";
                         client.SendRequest(response.ToJson());
                     }
-
                     if (request.Method == "read" && request.Path == "/api/categories/1")
                     {
                         response.Status = "1 Ok";
                         response.Body = categories[0].JsonObj();
                         client.SendRequest(response.ToJson());
-
                     }
-
-                    if (request.Date.Contains(""))
-                    {
-                        response.Status = "illegal date, missing resources";
-                        client.SendRequest(response.ToJson());
-                    }
-
+                    
+     
                     if (!request.Path.Contains("/api/xxx") || request.Path.Contains("/api/categories/xxx"))
                     {
                         response.Status = "4 Bad Request";
                         client.SendRequest(response.ToJson());
                     }
-
-                    if (request.Date == null)
+                    
+                    if (request.Method == "create")
+                    {
+                        response.Status = "4 Bad Request";
+                    }
+                    
+                    /*if (request.Date == null)
                     {
                         response.Status = " missing date";
                         client.SendRequest(response.ToJson());
-                    }
+                    }*/
 
-
-                
+                    /*if (request.Date.Contains(""))
+                         {
+                             response.Status = "illegal date, missing resources";
+                             client.SendRequest(response.ToJson());
+                         }*/
 
                     client.SendRequest(response.ToJson());
                 });
             }
         }
     }
-
-
-
     public static class Util
     {
-
         public static string JsonObj(this object data)
         {
             return JsonSerializer.Serialize(data,
                 new JsonSerializerOptions {PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
         }
-
         public static void Send(this TcpClient client, string request)
         {
             var msg = Encoding.UTF8.GetBytes(request);
             client.GetStream().Write(msg, 0, msg.Length);
         }
-
         public static void SendRequest(this TcpClient client, string request)
         {
             var msg = Encoding.UTF8.GetBytes(request);
             client.GetStream().Write(msg, 0, msg.Length);
         }
-
         //Note that this method takes RequestFormat -> From ServerProgram - shall be changed for future i think.
         public static ServerProgram.RequestFormat ReadResponse(this TcpClient client)
         {
@@ -206,22 +192,17 @@ namespace Server
                 {
                     bytesread = strm.Read(resp, 0, resp.Length);
                     memStream.Write(resp, 0, bytesread);
-
                 } while (bytesread == 2048);
-
                 var responseData = Encoding.UTF8.GetString(memStream.ToArray());
                 // Deseralize the object into RequestFormat
                 return JsonSerializer.Deserialize<ServerProgram.RequestFormat>(responseData,
                     new JsonSerializerOptions {PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
             }
         }
-
         public static string ToJson(this object data)
         {
             return JsonSerializer.Serialize(data,
                 new JsonSerializerOptions {PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
         }
-
     }
 }
-

@@ -79,11 +79,23 @@ namespace Server
                     categories.Add(new {cid = 3, name = "Confections"});
                     Console.WriteLine(DateTimeOffset.Now.ToUnixTimeSeconds().ToString());
                     
-                    if (requirespath.Contains(request.Method.ToLower()) && request.Path == null)
+                    
+                    DateTime now = DateTime.Now;
+                    
+                    if (request.Method == null && request.Path == null && request.Date == null && request.Body == null)
+                    {
+                        response.Status = "missing body, illegal body, missing date";
+                        client.SendRequest(response.ToJson());
+                    }
+                    
+                    else if (requirespath.Contains(request.Method.ToLower()) && request.Path == null)
                     {
                         response.Status = "missing resource";
                         client.SendRequest(response.ToJson());
                     }
+                    
+                    else if (DateTime.TryParse(request.Date, out now))
+                        response.Status = "4 illegal date";
                     
                     else if (request.Method.Contains("create") || request.Method.Contains("update") ||
                         request.Method.Contains("echo") && request.Body == null && request.Date.Length == 10 && request.Path.Length > 4)
@@ -119,19 +131,12 @@ namespace Server
                         client.SendRequest(response.ToJson());
                     }
 
-                    if (!request.Path.Contains("/api/categories/") || request.Path.Contains("/api/categories/xxx"))
+                    if (!request.Path.Contains("/api/xxx") || request.Path.Contains("/api/categories/xxx"))
                     {
                         response.Status = "4 Bad Request";
                         client.SendRequest(response.ToJson());
                     }
-
-                    if (request.Date == null)
-                    {
-                        response.Status = " missing date";
-                        client.SendRequest(response.ToJson());
-                    }
-
-
+                    
                     if (request.Body == null
                         || !request.Body.Contains("{}"))
                     {
@@ -140,8 +145,6 @@ namespace Server
                     }
 
                     client.SendRequest(response.ToJson());
-
-
                 });
             }
         }

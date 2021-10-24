@@ -4,9 +4,6 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Utillities\Utillities.csproj" />
-  </ItemGroup>
+  
 
 </Project>

@@ -71,26 +71,26 @@ namespace Server
                 var task = Task<RequestFormat>.Run(() =>
                 {
                     Console.WriteLine("New Request Getting Checked");
+                    var legalmethods = "create read update delete echo";
+                    var requirespath = "create read update delete";
                     var categories = new List<object>();
                     categories.Add(new {cid = 1, name = "Beverages"});
                     categories.Add(new {cid = 2, name = "Condiments"});
                     categories.Add(new {cid = 3, name = "Confections"});
                     Console.WriteLine(DateTimeOffset.Now.ToUnixTimeSeconds().ToString());
                     
-                    
-                    
-                    if (request.Method.Contains("create") || request.Method.Contains("update") ||
-                        request.Method.Contains("echo") && request.Body == null && request.Date.Length == 10 && request.Path.Length > 4)
-                    {
-                        response.Status = "missing body";
-                        client.SendRequest(response.ToJson());
-                        
-                    } else if (request.Method.Contains("create") || request.Method.Contains("read") ||
-                               request.Method.Contains("update") || request.Method.Contains("delete") || request.Date.Length > 15 && request.Body == null)
+                    if (requirespath.Contains(request.Method.ToLower()) && request.Path == null)
                     {
                         response.Status = "missing resource";
                         client.SendRequest(response.ToJson());
                     }
+                    
+                    else if (request.Method.Contains("create") || request.Method.Contains("update") ||
+                        request.Method.Contains("echo") && request.Body == null && request.Date.Length == 10 && request.Path.Length > 4)
+                    {
+                        response.Status = "missing body";
+                        client.SendRequest(response.ToJson());
+                    } 
 
                     if (request.Method == "echo")
                     {

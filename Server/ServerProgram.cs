@@ -94,7 +94,7 @@ namespace Server
                     else if (request.Method.Contains("create") || request.Method.Contains("update") ||
                         request.Method.Contains("echo") && request.Body == null && request.Date.Length == 10 && request.Path.Length > 4)
                     {
-                        if (request.Method == "update" && request.Path.Contains("/api/categories/"))
+                        if (request.Path.Contains("/api/categories/"))
                         {
                             if (!request.Body.Contains("{"))
                             {
@@ -102,10 +102,19 @@ namespace Server
                                 client.SendRequest(response.ToJson());
                             }
                         }
+                        
+
                         response.Status = "missing body";
                         client.SendRequest(response.ToJson());
-                    } 
+                    }
 
+                    if (requirespath.Contains(request.Method.ToLower()) && !request.Path.Contains("/api/categories/"))
+                    {
+                        response.Status = "4 Bad Request";
+                            response.Body = null;
+                            client.SendRequest(response.ToJson());
+                    }
+                    
                     if (request.Method == "echo")
                     {
                         response.Status = "Hello World";

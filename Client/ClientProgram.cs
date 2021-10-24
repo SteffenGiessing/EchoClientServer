@@ -9,7 +9,6 @@ namespace Client
 {
     class ClientProgram
     {
-        static readonly HttpClient HttpClient = new HttpClient();
         
         static void Main(string[] args)
         {

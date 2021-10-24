@@ -79,6 +79,12 @@ namespace Server
                     categories.Add(new {cid = 3, name = "Confections"});
                     Console.WriteLine(DateTimeOffset.Now.ToUnixTimeSeconds().ToString());
                     
+                    
+                    if (request.Method == null && request.Path == null && request.Date == null && request.Body == null)
+                    {
+                        response.Status = "missing body, illegal body, missing date";
+                        client.SendRequest(response.ToJson());
+                    }
                     if (requirespath.Contains(request.Method.ToLower()) && request.Path == null)
                     {
                         response.Status = "missing resource";
@@ -88,6 +94,14 @@ namespace Server
                     else if (request.Method.Contains("create") || request.Method.Contains("update") ||
                         request.Method.Contains("echo") && request.Body == null && request.Date.Length == 10 && request.Path.Length > 4)
                     {
+                        if (request.Method == "update" && request.Path.Contains("/api/categories/"))
+                        {
+                            if (!request.Body.Contains("{"))
+                            {
+                                response.Status = "illegal body";
+                                client.SendRequest(response.ToJson());
+                            }
+                        }
                         response.Status = "missing body";
                         client.SendRequest(response.ToJson());
                     } 
@@ -98,6 +112,7 @@ namespace Server
                         response.Body = "Hello World";
                         client.SendRequest(response.ToJson());
                     }
+                 
 
                     if (request.Method == "xxxx")
                     {
@@ -132,12 +147,7 @@ namespace Server
                     }
 
 
-                    if (request.Body == null
-                        || !request.Body.Contains("{}"))
-                    {
-                        response.Status = "missing body, illegal body";
-                        client.SendRequest(response.ToJson());
-                    }
+                
 
                     client.SendRequest(response.ToJson());
 

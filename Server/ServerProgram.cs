@@ -74,18 +74,24 @@ namespace Server
                     categories.Add(new {cid = 1, name = "Beverages"});
                     categories.Add(new {cid = 2, name = "Condiments"});
                     categories.Add(new {cid = 3, name = "Confections"});
-                    Console.WriteLine(DateTimeOffset.Now.ToString());
-
-                
-
+                    Console.WriteLine(DateTimeOffset.Now.ToUnixTimeSeconds().ToString());
+                    
+                    
+                    
                     if (request.Method.Contains("create") || request.Method.Contains("update") ||
-                        request.Method.Contains("echo") && request.Body == null && request.Date.Length == 10)
+                        request.Method.Contains("echo") && request.Body == null && request.Date.Length == 10 && request.Path.Length > 4)
                     {
                         response.Status = "missing body";
                         client.SendRequest(response.ToJson());
                         
+                    } else if (request.Method.Contains("create") || request.Method.Contains("read") ||
+                               request.Method.Contains("update") || request.Method.Contains("delete") || request.Date.Length > 15 && request.Body == null)
+                    {
+                        response.Status = "missing resource";
+                        client.SendRequest(response.ToJson());
                     }
-                    if (request.Method == "echo"  )
+
+                    if (request.Method == "echo")
                     {
                         response.Status = "Hello World";
                         response.Body = "Hello World";

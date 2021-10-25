@@ -97,6 +97,11 @@ namespace Server
                         {
                             if (request.Body != null && !request.Body.Contains("{}"))
                             {
+                                if (request.Body.Contains("name"))
+                                {
+                                    response.Status = "4 bad request";
+                                    client.SendRequest(response.ToJson());
+                                }
                                 response.Status = "illegal body";
                                 client.SendRequest(response.ToJson());
                             }

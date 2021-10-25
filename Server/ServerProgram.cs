@@ -93,12 +93,13 @@ namespace Server
                         request.Method.Contains("echo") && request.Body == null && request.Date != null &&
                         request.Date.Length == 10 && request.Path != null && request.Path.Length > 4)
                     {
-                        if (request.Path != null && request.Path.Contains("/api/categories/"))
+                        if (request.Path != null && request.Path.Contains("/api/categories"))
                         {
                             if (request.Body != null && !request.Body.Contains("{}"))
                             {
                                 if (request.Body.Contains("name"))
                                 {
+                                    //here
                                     response.Status = "4 bad request";
                                     client.SendRequest(response.ToJson());
                                 }
@@ -111,7 +112,7 @@ namespace Server
                             response.Status = "illegal date";
                             client.SendRequest(response.ToJson());
                         }
-
+                        Console.WriteLine("here");
                         response.Status = "missing body";
                         client.SendRequest(response.ToJson());
                     }

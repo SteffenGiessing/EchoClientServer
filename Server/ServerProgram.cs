@@ -93,6 +93,13 @@ namespace Server
                         request.Method.Contains("echo") || request.Method.Contains("delete") && request.Body == null && request.Date != null &&
                         request.Date.Length == 10 && request.Path != null && request.Path.Length > 4)
                     {
+                  
+                        if (request.Method == "echo" && request.Body == "Hello World")
+                        {
+                            response.Status = "Hello World";
+                            response.Body = "Hello World";
+                            client.SendRequest(response.ToJson());
+                        }
                         if (request.Path != null && request.Path.Contains("/api/categories"))
                         {
                             if (request.Body != null && !request.Body.Contains("{}"))
@@ -135,7 +142,12 @@ namespace Server
                         response.Body = null;
                         client.SendRequest(response.ToJson());
                     } else if (requirespath.Contains(request.Method.ToLower()) && request.Path.Contains("/api/categories"))
-                    {
+                    {      if (request.Method == "read" && request.Path == "/api/categories/1")
+                        {
+                            response.Status = "1 Ok";
+                            response.Body = categories[0].JsonObj();
+                            client.SendRequest(response.ToJson());
+                        }
                         response.Status = "4 Bad Request";
                         response.Body = null;
                         client.SendRequest(response.ToJson());
@@ -144,20 +156,10 @@ namespace Server
                     
                     
                   
-                    if (request.Method == "echo")
-                    {
-                        response.Status = "Hello World";
-                        response.Body = "Hello World";
-                        client.SendRequest(response.ToJson());
-                    }
+               
                  
                   
-                    if (request.Method == "read" && request.Path == "/api/categories/1")
-                    {
-                        response.Status = "1 Ok";
-                        response.Body = categories[0].JsonObj();
-                        client.SendRequest(response.ToJson());
-                    }
+              
                     
      
                     if (!request.Path.Contains("/api/xxx") || request.Path.Contains("/api/categories/xxx"))

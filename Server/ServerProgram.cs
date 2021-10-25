@@ -90,7 +90,7 @@ namespace Server
 
 
                     if (request.Method.Contains("create") || request.Method.Contains("update") ||
-                        request.Method.Contains("echo") && request.Body == null && request.Date != null &&
+                        request.Method.Contains("echo") || request.Method.Contains("delete") && request.Body == null && request.Date != null &&
                         request.Date.Length == 10 && request.Path != null && request.Path.Length > 4)
                     {
                         if (request.Path != null && request.Path.Contains("/api/categories"))
@@ -99,12 +99,19 @@ namespace Server
                             {
                                 if (request.Body.Contains("name"))
                                 {
-                                    //here
+                                    Console.WriteLine("here");
                                     response.Status = "4 bad request";
                                     client.SendRequest(response.ToJson());
                                 }
                                 response.Status = "illegal body";
                                 client.SendRequest(response.ToJson());
+                            }
+
+                            if (request.Body == null && request.Method == "delete")
+                            {
+                                Console.WriteLine("here1");
+                                response.Status = "4 bad request";
+                                client.SendRequest(response.ToJson());  
                             }
                         }
                         else if (request.Date.Length > 15)
@@ -112,7 +119,7 @@ namespace Server
                             response.Status = "illegal date";
                             client.SendRequest(response.ToJson());
                         }
-                        Console.WriteLine("here");
+                        Console.WriteLine("here1");
                         response.Status = "missing body";
                         client.SendRequest(response.ToJson());
                     }
@@ -121,13 +128,17 @@ namespace Server
                         response.Status = "illegal method";
                         client.SendRequest(response.ToJson());
                     }
-                    if (requirespath.Contains(request.Method.ToLower()) && !request.Path.Contains("/api/categories/"))
+                    if (requirespath.Contains(request.Method.ToLower()) && !request.Path.Contains("/api/categories"))
+                    {
+                        
+                        response.Status = "4 Bad Request";
+                        response.Body = null;
+                        client.SendRequest(response.ToJson());
+                    } else if (requirespath.Contains(request.Method.ToLower()) && request.Path.Contains("/api/categories"))
                     {
                         response.Status = "4 Bad Request";
-                            response.Body = null;
-                            client.SendRequest(response.ToJson());
-                    } else if (requirespath.Contains(request.Method.ToLower()))
-                    {
+                        response.Body = null;
+                        client.SendRequest(response.ToJson());
                         
                     }
                     

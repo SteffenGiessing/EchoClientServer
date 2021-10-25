@@ -72,8 +72,6 @@ namespace Server
                     Console.WriteLine(DateTimeOffset.Now.ToUnixTimeSeconds().ToString());
                     Console.WriteLine(DateTimeOffset.Now.ToString());
 
-                    DateTime now = DateTime.Now;
-
                     if (request.Method == null && request.Date == null && request.Body == null)
                     {
 
@@ -81,7 +79,7 @@ namespace Server
                         client.SendRequest(response.ToJson());
                     }
 
-                    
+
                     if (requirespath.Contains(request.Method.ToLower()) && request.Path == null)
                     {
                         response.Status = "missing resource";
@@ -103,6 +101,7 @@ namespace Server
                                     response.Status = "4 bad request";
                                     client.SendRequest(response.ToJson());
                                 }
+
                                 response.Status = "illegal body";
                                 client.SendRequest(response.ToJson());
                             }
@@ -121,57 +120,52 @@ namespace Server
                         response.Status = "illegal method";
                         client.SendRequest(response.ToJson());
                     }
-                    if (requirespath.Contains(request.Method.ToLower()) && !request.Path.Contains("/api/categories/"))
-                    {
-                        response.Status = "4 Bad Request";
-                            response.Body = null;
-                            client.SendRequest(response.ToJson());
-                    } else if (requirespath.Contains(request.Method.ToLower()))
-                    {
-                        
-                    }
-                    
-                    
-                  
+
                     if (request.Method == "echo")
                     {
                         response.Status = "Hello World";
                         response.Body = "Hello World";
                         client.SendRequest(response.ToJson());
                     }
-                 
-                  
-                    if (request.Method == "read" && request.Path == "/api/categories/1")
+
+                    /*
+                    if (request.Path == "/api/categories")
                     {
                         response.Status = "1 Ok";
-                        response.Body = categories[0].JsonObj();
+                        response.Body = categories.JsonObj();
+                        client.SendRequest(response.ToJson());
+
+                    }
+                    */
+                    
+                   if (requirespath.Contains(request.Method.ToLower()) && request.Path == "/api/categories")
+                    {
+                        response.Status = "4 Bad Request";
+                        response.Body = null;
                         client.SendRequest(response.ToJson());
                     }
-                    
-     
+
+                   if (request.Method == "read" && request.Path == "/api/categories/1")
+                   {
+                       if(request.Method == "read" && request.Path == "/api/categories")
+                       {         
+                           response.Status = "1 Ok";
+                           response.Body = categories.JsonObj();
+                           client.SendRequest(response.ToJson());
+                       }
+                       
+                       response.Status = "1 Ok";
+                       response.Body = categories[0].JsonObj();
+                       client.SendRequest(response.ToJson());
+                   }
+
+                   
                     if (!request.Path.Contains("/api/xxx") || request.Path.Contains("/api/categories/xxx"))
                     {
                         response.Status = "4 Bad Request";
                         client.SendRequest(response.ToJson());
-                    }
+                    } 
                     
-                    if (request.Method == "create")
-                    {
-                        response.Status = "4 Bad Request";
-                    }
-                    
-                    /*if (request.Date == null)
-                    {
-                        response.Status = " missing date";
-                        client.SendRequest(response.ToJson());
-                    }*/
-
-                    /*if (request.Date.Contains(""))
-                         {
-                             response.Status = "illegal date, missing resources";
-                             client.SendRequest(response.ToJson());
-                         }*/
-
                     client.SendRequest(response.ToJson());
                 });
             }

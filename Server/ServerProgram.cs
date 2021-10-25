@@ -84,7 +84,7 @@ namespace Server
                     
                     if (request.Method == null && request.Path == null && request.Date == null && request.Body == null)
                     {
-                        response.Status = "missing body, illegal body, missing date";
+                        response.Status = "missing body, illegal body, missing date, missing method";
                         client.SendRequest(response.ToJson());
                     }
                     
@@ -119,6 +119,9 @@ namespace Server
                         response.Status = "4 Bad Request";
                             response.Body = null;
                             client.SendRequest(response.ToJson());
+                    } else if (requirespath.Contains(request.Method.ToLower()))
+                    {
+                        
                     }
                     
                     if (request.Method == "echo")

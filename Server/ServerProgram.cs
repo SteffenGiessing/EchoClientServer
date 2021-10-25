@@ -45,6 +45,7 @@ namespace Server
         static void Main(string[] args)
         {
             Response response = new Response();
+          
             IPAddress ipAddress = Dns.Resolve("localhost").AddressList[0];
             var server = new TcpListener(ipAddress, 5000);
             server.Start();
@@ -69,14 +70,35 @@ namespace Server
                     categories.Add(new {cid = 1, name = "Beverages"});
                     categories.Add(new {cid = 2, name = "Condiments"});
                     categories.Add(new {cid = 3, name = "Confections"});
-                    Console.WriteLine(DateTimeOffset.Now.ToUnixTimeSeconds().ToString());
-                    Console.WriteLine(DateTimeOffset.Now.ToString());
+                   
 
                     DateTime now = DateTime.Now;
-
+                    /*
+                    if (request.Method == "delete" && request.Path.Contains("/api/categories/"))
+                    {
+                        categories.Remove(4);
+                        client.SendRequest(categories.ToJson());
+                    }
+                    if (request.Method.Contains("create") && request.Path.Contains("api/categories"))
+                    {
+                        
+                        var addProp = request.Body.JsonToObject<Category>();
+                        categories.Add(addProp);
+                        Console.WriteLine(categories.ToJson());
+                        client.SendRequest(categories[4].ToJson());
+                    }
+                    
+                    /*
+                    if (request.Method == "xxxx" || request.Path.Contains("/api/xxx") )
+                    {
+                        Console.WriteLine("Hitting xxx Method");
+                        response.Status = "illegal method, 4 bad request";
+                        client.SendRequest(response.ToJson());
+                    }
+                    */
                     if (request.Method == null && request.Date == null && request.Body == null)
                     {
-
+                        Console.WriteLine("Hitting Empty Json");
                         response.Status = "missing body, illegal body, missing date, missing method";
                         client.SendRequest(response.ToJson());
                     }
@@ -88,12 +110,23 @@ namespace Server
                         client.SendRequest(response.ToJson());
                     }
 
+                    if (request.Method == "delete" && request.Path == "/api/categories/5")
+                    {
+                        categories.Remove(5);
+                    }
 
+                 
                     if (request.Method.Contains("create") || request.Method.Contains("update") ||
                         request.Method.Contains("echo") || request.Method.Contains("delete") && request.Body == null && request.Date != null &&
                         request.Date.Length == 10 && request.Path != null && request.Path.Length > 4)
                     {
-                  
+                        if (request.Method.Contains("create") && request.Path == "api/categories")
+                        {
+                            categories.Add(request.Body);
+                            Console.WriteLine(categories.ToJson());
+                            client.SendRequest(categories.ToJson());
+                        }
+                     
                         if (request.Method == "echo" && request.Body == "Hello World")
                         {
                             response.Status = "Hello World";
@@ -106,7 +139,30 @@ namespace Server
                             {
                                 if (request.Body.Contains("name"))
                                 {
-                                    Console.WriteLine("here");
+                                    if (request.Method == "update" && request.Path.Contains("/api/categories/1") &&
+                                        request.Body != null)
+                                    {
+                                        if (request.Path.Contains("api/categories/123"))
+                                        {
+                                            response.Status = "5 not found";
+                                            response.Body = null;
+                                            client.SendRequest(response.ToJson());
+                                        }
+                                       
+                                        Console.WriteLine("Here we are steffen");
+                                        response.Status = "3 updated";
+                                        var id1 = categories[0].ToJson();
+                                        Console.WriteLine(id1);
+                        
+                                        id1.Remove(0,0);
+                                        categories.Insert(0,request.Body);
+                                        Console.WriteLine(categories[1]);
+                                        Console.WriteLine(categories.ToJson());
+                                        response.Body = categories[0].ToJson();
+                                        client.SendRequest(response.ToJson());
+                                        
+                                    }
+                                    Console.WriteLine("here far down name");
                                     response.Status = "4 bad request";
                                     client.SendRequest(response.ToJson());
                                 }
@@ -130,7 +186,7 @@ namespace Server
                         response.Status = "missing body";
                         client.SendRequest(response.ToJson());
                     }
-                    else if (request.Method == "xxxx")
+                    if (request.Method == "xxxx")
                     {
                         response.Status = "illegal method";
                         client.SendRequest(response.ToJson());
@@ -142,12 +198,33 @@ namespace Server
                         response.Body = null;
                         client.SendRequest(response.ToJson());
                     } else if (requirespath.Contains(request.Method.ToLower()) && request.Path.Contains("/api/categories"))
-                    {      if (request.Method == "read" && request.Path == "/api/categories/1")
+                    {
+                      
+                        if (request.Path.Contains("api/categories/123"))
+                        {
+                            response.Status = "5 not found";
+                            response.Body = null;
+                            client.SendRequest(response.ToJson());
+                        }
+                        if (request.Path.Contains("/api/categories/x"))
+                        {
+                            response.Status = "4 Bad Request";
+                            response.Body = null;
+                            client.SendRequest(response.ToJson());
+                        }
+                        if (request.Method == "read" && request.Path == "/api/categories/1")
                         {
                             response.Status = "1 Ok";
                             response.Body = categories[0].JsonObj();
                             client.SendRequest(response.ToJson());
+                        } else if (request.Method == "read" && request.Path.Contains("/api/categories"))
+                        {
+                            response.Status = "1 Ok";
+                            response.Body = categories.JsonObj();
+                            client.SendRequest(response.ToJson());
                         }
+                        
+            
                         response.Status = "4 Bad Request";
                         response.Body = null;
                         client.SendRequest(response.ToJson());
@@ -155,18 +232,32 @@ namespace Server
                     }
                     
                     
-                  
-               
-                 
-                  
-              
                     
-     
-                    if (!request.Path.Contains("/api/xxx") || request.Path.Contains("/api/categories/xxx"))
+                  
+                    if (request.Method.Contains("xxxx"))
                     {
-                        response.Status = "4 Bad Request";
+                        Console.WriteLine("Hitting xxx Method");
+                        response.Status = "illegal method, 4 bad request";
                         client.SendRequest(response.ToJson());
                     }
+
+                    if (request.Path.Contains("/api/xxx"))
+                    {
+                        response.Status = "4 bad request";
+                        client.SendRequest(response.ToJson());
+                    }
+                 
+                  
+                    if (request.Method.Contains("update") || request.Path.Contains("/api/categories"))
+                    {
+                        var addProp = request.Body.JsonToObject<Category>();
+                        categories.Add(addProp);
+                        Console.WriteLine(categories.ToJson());
+                        client.SendRequest(categories[4].ToJson());
+                    }
+                    
+     
+                
                     
                     if (request.Method == "create")
                     {
@@ -184,7 +275,7 @@ namespace Server
                              response.Status = "illegal date, missing resources";
                              client.SendRequest(response.ToJson());
                          }*/
-
+                 
                     client.SendRequest(response.ToJson());
                 });
             }
@@ -196,6 +287,10 @@ namespace Server
         {
             return JsonSerializer.Serialize(data,
                 new JsonSerializerOptions {PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
+        }
+        public static T JsonToObject<T>(this string element)
+        {
+            return JsonSerializer.Deserialize<T>(element, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
         public static void Send(this TcpClient client, string request)
         {
